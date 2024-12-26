@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Perguntas Matemáticas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #videoFundo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            z-index: -1;
+        }
+
+        .container {
+            position: absolute; 
+            top: 30%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center;
+            color: white;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            background: rgb(2, 49, 6); 
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 10px;
+            width: 80px;
+            text-align: center;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            background-color: #ff9900;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #cc7a00;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video id="videoFundo" autoplay muted loop>
+        <source src="animacoes/fundo.mp4" type="video/mp4">
+    </video>
+
+    <div class="container" id="conteudo">
+        <h1>Pergunta Matemática</h1>
+        <p id="pergunta"></p>
+        <div class="input-container">
+            <input type="number" id="resposta" placeholder="?" />
+        </div>
+        <button onclick="verificarResposta()">Verificar</button>
+        <p id="pontuacao">Pontos: 0</p>
+    </div>
+
+    <script>
+        let respostaCorreta = 0;
+        let pontos = 0;
+
+        // Gera uma nova pergunta matemática
+        function gerarPergunta() {
+            const num1 = Math.floor(Math.random() * 10) + 1; 
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operacao = Math.random();
+            let pergunta = "";
+
+            if (operacao < 0.33) {
+                pergunta = `Quanto é ${num1} + ${num2}?`;
+                respostaCorreta = num1 + num2;
+            } else if (operacao < 0.66) {
+                pergunta = `Quanto é ${num1} - ${num2}?`;
+                respostaCorreta = num1 - num2;
+            } else {
+                pergunta = `Quanto é ${num1} * ${num2}?`;
+                respostaCorreta = num1 * num2;
+            }
+
+            document.getElementById("pergunta").textContent = pergunta;
+        }
+
+        // Verifica a resposta do jogador
+        function verificarResposta() {
+            const resposta = parseInt(document.getElementById('resposta').value);
+
+            if (isNaN(resposta)) {
+                alert("Por favor, insira um número válido.");
+                return;
+            }
+
+            if (resposta === respostaCorreta) {
+                pontos += 10;
+                document.getElementById("pontuacao").textContent = `Pontos: ${pontos}`;
+                gerarPergunta();
+                document.getElementById('resposta').value = "";
+            } else {
+                encerrarJogo();
+            }
+        }
+
+        // Finaliza o jogo
+        function encerrarJogo() {
+            const conteudo = document.getElementById("conteudo");
+            conteudo.innerHTML = `
+                <h1>Fim de Jogo!</h1>
+                <p>Sua pontuação final foi: ${pontos}</p>
+                <button onclick="reiniciarJogo()">Jogar Novamente</button>
+            `;
+        }
+
+        // Reinicia o jogo
+        function reiniciarJogo() {
+            pontos = 0;
+            document.getElementById("conteudo").innerHTML = `
+                <h1>Pergunta Matemática</h1>
+                <p id="pergunta"></p>
+                <div class="input-container">
+                    <input type="number" id="resposta" placeholder="?" />
+                </div>
+                <button id="verificarBotao">Verificar</button>
+                <p id="pontuacao">Pontos: 0</p>
+            `;
+        
+            // Adiciona novamente o evento ao botão
+            document.getElementById("verificarBotao").onclick = verificarResposta;
+        
+            // Gera uma nova pergunta
+            gerarPergunta();
+        }
+        
+        // Inicializa o jogo
+        gerarPergunta();
+    </script>
+</body>
+</html>
